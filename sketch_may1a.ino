@@ -1,33 +1,39 @@
 #include <SPI.h>
 #include <MFRC522.h>
- 
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(5,4,3,2,1,0); 
 #define SS_PIN 10
 #define RST_PIN 9
-#define LED_G 5 //define green LED pin
-#define LED_R 4 //define red LED
-#define RELAY 3 //relay pin
-#define BUZZER 2 //buzzer pin
+#define RELAY 7 //relay pin
 #define ACCESS_DELAY 2000
 #define DENIED_DELAY 1000
 MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance.
  
 void setup() 
 {
+  lcd.begin(16,2);
+    lcd.print("Put you card in reader");
+   lcd.setCursor(1,1);
+  lcd.print("reader");
+  lcd.cursor();
+  lcd.blink();
+  delay(2000);
+  lcd.noBlink();
+  lcd.noCursor();
+  lcd.clear();
   Serial.begin(9600);   // Initiate a serial communication
   SPI.begin();          // Initiate  SPI bus
   mfrc522.PCD_Init();   // Initiate MFRC522
-  pinMode(LED_G, OUTPUT);
-  pinMode(LED_R, OUTPUT);
   pinMode(RELAY, OUTPUT);
-  pinMode(BUZZER, OUTPUT);
-  noTone(BUZZER);
+
   digitalWrite(RELAY, HIGH);
   Serial.println("Put your card to the reader...");
   Serial.println();
+  
 
 }
 void loop() 
-{
+{ 
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) 
   {
@@ -55,21 +61,21 @@ void loop()
   if (content.substring(1) == "EA 51 64 02") //change here the UID of the card/cards that you want to give access
   {
     Serial.println("Authorized access");
-    Serial.println();
-    delay(500);
+    lcd.print("Access granded");
     digitalWrite(RELAY, LOW);
-    digitalWrite(LED_G, HIGH);
-    delay(ACCESS_DELAY);
+    Serial.println();
+    delay(5000);
+    lcd.clear();
     digitalWrite(RELAY, HIGH);
-    digitalWrite(LED_G, LOW);
+    
+
   }
  
  else   {
     Serial.println(" Access denied");
-    digitalWrite(LED_R, HIGH);
-    tone(BUZZER, 300);
-    delay(DENIED_DELAY);
-    digitalWrite(LED_R, LOW);
-    noTone(BUZZER);
+    lcd.print("Access denied");
+    delay(1000);
+    lcd.clear();
+
   }
 }
