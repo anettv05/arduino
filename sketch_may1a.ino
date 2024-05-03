@@ -1,6 +1,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <LiquidCrystal.h>
+#include <Wire.h>
 LiquidCrystal lcd(5,4,3,2,1,0); 
 #define SS_PIN 10
 #define RST_PIN 9
@@ -10,9 +11,9 @@ LiquidCrystal lcd(5,4,3,2,1,0);
 MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance.
  
 void setup() 
-{
+{ 
   lcd.begin(16,2);
-    lcd.print("Put you card in reader");
+    lcd.print("Put your card in");
    lcd.setCursor(1,1);
   lcd.print("reader");
   lcd.cursor();
@@ -21,7 +22,6 @@ void setup()
   lcd.noBlink();
   lcd.noCursor();
   lcd.clear();
-  Serial.begin(9600);   // Initiate a serial communication
   SPI.begin();          // Initiate  SPI bus
   mfrc522.PCD_Init();   // Initiate MFRC522
   pinMode(RELAY, OUTPUT);
@@ -33,7 +33,7 @@ void setup()
 
 }
 void loop() 
-{ 
+{ Wire.setClock(10000);
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) 
   {
